@@ -1,0 +1,40 @@
+#include <Servo.h>
+
+Servo myServo;
+
+bool sweepDone = false;
+
+void setup() {
+  Serial.begin(9600);
+  myServo.attach(9);         // Attach servo to PWM pin
+  delay(500);                // Small delay after power-on
+
+  // Do the one-time sweep from 0 to 180 degrees
+  for (int angle = 0; angle <= 180; angle++) {
+    myServo.write(angle);
+    delay(15);               // Adjust for speed
+  }
+
+  sweepDone = true;          // Mark sweep as complete
+
+  Serial.println("Sweep complete. Type angle (0 to 180):");
+}
+
+void loop() {
+  if (Serial.available()) {
+    int angle = Serial.parseInt();
+
+    if (angle >= 0 && angle <= 180) {
+      myServo.write(angle);
+      Serial.print("Servo angle: ");
+      Serial.println(angle);
+    } else {
+      Serial.println("Invalid angle.");
+    }
+
+    // Clear serial buffer
+    while (Serial.available()) {
+      Serial.read();
+    }
+  }
+}
